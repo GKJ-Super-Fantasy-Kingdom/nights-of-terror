@@ -1,5 +1,3 @@
-using System;
-
 namespace NightsOfTerror
 {
     // Lives for one dawn checkpoint. Loading the checkpoint creates a fresh schedule.
@@ -11,7 +9,7 @@ namespace NightsOfTerror
         }
 
         internal static int SizeFromQuota(int quota)
-            => quota <= 0 ? 0 : Math.Max(10, Math.Min(30, (int)((quota + 4L) / 5)));
+            => quota <= 0 ? 0 : quota / 2 + quota % 2;
 
         internal int Count { get; }
         internal int Remaining { get; private set; }

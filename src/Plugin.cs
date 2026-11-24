@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace NightsOfTerror
 {
-    [BepInPlugin("gkj.nightsofterror", "Nights of Terror", "0.1.2")]
+    [BepInPlugin("gkj.nightsofterror", "Nights of Terror", "0.1.3")]
     public sealed class Plugin : BaseUnityPlugin
     {
         internal static Plugin Active;

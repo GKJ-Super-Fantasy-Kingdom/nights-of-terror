@@ -1,7 +1,7 @@
 param(
     [string]$GameDir = 'D:\SteamLibrary\steamapps\common\Super Fantasy Kingdom',
     [string]$ProfileDir = "$PSScriptRoot/../.analysis/profile",
-    [string]$Package = "$PSScriptRoot/../dist/NightsOfTerror-0.1.2.zip",
+    [string]$Package = "$PSScriptRoot/../dist/NightsOfTerror-0.1.3.zip",
     [string]$WagerPackage,
     [string]$CopiedSave
 )
@@ -34,7 +34,7 @@ $flags = [Reflection.BindingFlags]'Public,NonPublic,Instance,Static'
 $scheduler = $mod.GetType('NightsOfTerror.Reinforcement')
 $sizeFromQuota = $scheduler.GetMethod('SizeFromQuota',$flags)
 function SizeFromQuota([int]$quota) { $sizeFromQuota.Invoke($null,@($quota)) }
-foreach ($case in @{0=0; 6=10; 50=10; 51=11; 119=24; 167=30; ([int]::MaxValue)=30}.GetEnumerator()) {
+foreach ($case in @{(-1)=0; 0=0; 1=1; 6=3; 50=25; 51=26; 119=60; 167=84; ([int]::MaxValue)=1073741824}.GetEnumerator()) {
     Check ((SizeFromQuota $case.Key) -eq $case.Value) "quota $($case.Key) yields $($case.Value) foes"
 }
 $groupSize = SizeFromQuota 119

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.3
+
+- Set the midnight group to half the original ordinary-wave quota, rounded up.
+
 ## 0.1.2
 
 - Scaled midnight group size to the original ordinary-wave quota.

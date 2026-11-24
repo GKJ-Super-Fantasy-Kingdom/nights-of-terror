@@ -1,6 +1,6 @@
 # Nights of Terror
 
-The midnight group is 20% of the ordinary wave's original spawn quota, rounded up to a minimum of 10 and a maximum of 30. An ordinary night with a zero quota has no reinforcement. Midnight begins when the evening timer first expires, even if the original wave is still fighting. The dusk warning shows the count. Each reinforcement comes from the same enemy pool selected by dusk, using native tier difficulty and higher odds for recent tiers.
+The midnight group is 50% of the ordinary wave's original spawn quota, rounded up. An ordinary night with a zero quota has no reinforcement. Midnight begins when the evening timer first expires, even if the original wave is still fighting. The dusk warning shows the count. Each reinforcement comes from the same enemy pool selected by dusk, using native tier difficulty and higher odds for recent tiers.
 
 The default spacing is 0.075 game seconds between arrivals, the same as native Rush. Set `RushedArrival = false` in `BepInEx/config/gkj.nightsofterror.cfg` for one-second spacing. Player Rush controls, unlocks, Auto Rush and Rush glory follow the base game.
 
@@ -10,7 +10,7 @@ Boss nights, day 29, and the final day of a shortened challenge use the original
 
 ## Local installation
 
-Import `NightsOfTerror-0.1.2.zip` into a Super Fantasy Kingdom mod-manager profile, or extract `plugins/NightsOfTerror.dll` into the profile's `BepInEx/plugins` folder. Install the manifest's BepInEx dependencies for manual use. Remove the DLL to uninstall.
+Import `NightsOfTerror-0.1.3.zip` into a Super Fantasy Kingdom mod-manager profile, or extract `plugins/NightsOfTerror.dll` into the profile's `BepInEx/plugins` folder. Install the manifest's BepInEx dependencies for manual use. Remove the DLL to uninstall.
 
 ## Build
 
