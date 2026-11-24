@@ -1,6 +1,6 @@
 # Nights of Terror
 
-Three reinforcements join the normal wave on ordinary nights. Watch for the dusk warning. Midnight is the first time the evening timer expires, including while the original wave is still fighting. The group enters from the northern combat boundary using the current day's monster and difficulty.
+Ten reinforcements join the normal wave on ordinary nights. Watch for the dusk warning. Midnight is the first time the evening timer expires, including while the original wave is still fighting. The group enters from the northern combat boundary using the current day's monster and difficulty.
 
 The default spacing is 0.075 game seconds between arrivals, the same as native Rush. Set `RushedArrival = false` in `BepInEx/config/gkj.nightsofterror.cfg` for one-second spacing. Player Rush controls, unlocks, Auto Rush and Rush glory follow the base game.
 
@@ -10,7 +10,7 @@ Boss nights, day 29, and the final day of a shortened challenge use the original
 
 ## Local installation
 
-Import `NightsOfTerror-0.1.0.zip` into a Super Fantasy Kingdom mod-manager profile, or extract `plugins/NightsOfTerror.dll` into the profile's `BepInEx/plugins` folder. Install the manifest's BepInEx dependencies for manual use. Remove the DLL to uninstall.
+Import `NightsOfTerror-0.1.1.zip` into a Super Fantasy Kingdom mod-manager profile, or extract `plugins/NightsOfTerror.dll` into the profile's `BepInEx/plugins` folder. Install the manifest's BepInEx dependencies for manual use. Remove the DLL to uninstall.
 
 ## Build
 

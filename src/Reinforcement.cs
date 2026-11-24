@@ -3,7 +3,7 @@ namespace NightsOfTerror
     // Lives for one dawn checkpoint. Loading the checkpoint creates a fresh schedule.
     internal sealed class Reinforcement
     {
-        internal const int GroupSize = 3;
+        internal const int GroupSize = 10;
         internal int Remaining { get; private set; } = GroupSize;
         private float nextArrival;
 

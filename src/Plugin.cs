@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace NightsOfTerror
 {
-    [BepInPlugin("gkj.nightsofterror", "Nights of Terror", "0.1.0")]
+    [BepInPlugin("gkj.nightsofterror", "Nights of Terror", "0.1.1")]
     public sealed class Plugin : BaseUnityPlugin
     {
         internal static Plugin Active;
@@ -77,7 +77,7 @@ namespace NightsOfTerror
         private void Dusk(int day)
         {
             if (Schedule(DaytimeManager.Instance, MonsterSpawner.Instance, day))
-                AlertManager.Instance.DisplayMessage("Nights of Terror", "Three more foes arrive at midnight.");
+                AlertManager.Instance.DisplayMessage("Nights of Terror", $"{Reinforcement.GroupSize} more foes arrive at midnight.");
         }
 
         private bool Schedule(DaytimeManager today, MonsterSpawner spawner, int day)

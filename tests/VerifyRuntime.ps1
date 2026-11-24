@@ -1,7 +1,7 @@
 param(
     [string]$GameDir = 'D:\SteamLibrary\steamapps\common\Super Fantasy Kingdom',
     [string]$ProfileDir = "$PSScriptRoot/../.analysis/profile",
-    [string]$Package = "$PSScriptRoot/../dist/NightsOfTerror-0.1.0.zip",
+    [string]$Package = "$PSScriptRoot/../dist/NightsOfTerror-0.1.1.zip",
     [string]$WagerPackage,
     [string]$CopiedSave
 )
@@ -32,6 +32,8 @@ $packedBytes = FromZip $Package 'plugins/NightsOfTerror.dll'
 $mod = [Reflection.Assembly]::Load($packedBytes)
 $flags = [Reflection.BindingFlags]'Public,NonPublic,Instance,Static'
 $scheduler = $mod.GetType('NightsOfTerror.Reinforcement')
+$groupSize = $scheduler.GetField('GroupSize',$flags).GetRawConstantValue()
+Check ($groupSize -eq 10) 'midnight group contains ten foes'
 function Call($target, $method, [object[]]$arguments) {
     $target.GetType().GetMethod($method, $flags).Invoke($target, $arguments)
 }
@@ -39,20 +41,21 @@ foreach ($rush in $true,$false) {
     $group = [Activator]::CreateInstance($scheduler,$true)
     Check ((Call $group ForClearance 0) -eq 1) "early clearance held until midnight (rush=$rush)"
     Check ((Call $group ForClearance 7) -eq 7) 'overlapping original group keeps its real count'
-    foreach ($t in @(100,102,104)) {
+    for ($arrival = 1; $arrival -le $groupSize; $arrival++) {
+        $t = 100 + 2 * $arrival
         Check (Call $group IsDue ([single]$t)) 'fast-forward or delayed tick accepts the next arrival'
         Call $group Arrived @([single]$t,$rush)
         Check (!(Call $group IsDue ([single]$t))) 'repeated tick does not spawn another monster'
-        if ($t -lt 104) {
+        if ($arrival -lt $groupSize) {
             Check ((Call $group IsDue ([single]($t+0.08))) -eq $rush) 'group-local rushed spacing'
             Check ((Call $group ForClearance 0) -eq 1) 'instant kills between arrivals keep tavern closed'
         }
     }
-    Check (!(Call $group IsDue ([single]1000))) 'overtime never creates a fourth reinforcement'
+    Check (!(Call $group IsDue ([single]1000))) 'overtime stops after the tenth reinforcement'
     Check ((Call $group ForClearance 2) -eq 2 -and (Call $group ForClearance 0) -eq 0) 'native living population alone controls final clearance'
 }
 $replay = [Activator]::CreateInstance($scheduler,$true)
-Check ((Call $replay get_Remaining @()) -eq 3) 'fresh dawn schedule starts with all three arrivals'
+Check ((Call $replay get_Remaining @()) -eq $groupSize) 'fresh dawn schedule starts with all ten arrivals'
 Call $replay Cancel @()
 Check ((Call $replay ForClearance 0) -eq 0 -and !(Call $replay IsDue ([single]999))) 'interrupted group releases its reservation'
 $instance = [Runtime.CompilerServices.RuntimeHelpers]::GetUninitializedObject($mod.GetType('NightsOfTerror.Plugin'))
@@ -102,7 +105,8 @@ $combat.GetType().GetField('m_Monsters',$flags).SetValue($combat,[Collections.Ge
 $normal=GameObjectFixture ([SuperFantasyKingdom.Monster])
 $combat.RegisterMonster($normal)
 $enemies=@()
-foreach ($t in 100,101,109) {
+for ($arrival = 1; $arrival -le $groupSize; $arrival++) {
+    $t = 100 + $arrival
     $member=GameObjectFixture ([SuperFantasyKingdom.Monster])
     $combat.RegisterMonster($member)
     $enemies+=,$member
