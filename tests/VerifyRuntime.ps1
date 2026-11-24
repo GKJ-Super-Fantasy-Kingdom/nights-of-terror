@@ -155,6 +155,13 @@ try {
     $update = @(Ops DaytimeManager Update).Operand.Name
     Check ($update -contains 'HasChestToCollect' -and $update -contains 'IsProvoked' -and $update -contains 'CombatEnd') 'native tavern clearance retains chest, provocation and combat-end checks'
     Check ((Ops DaytimeManager SwitchState).Operand.Name -contains 'ChangeState' -and (Ops GameManager EndDay).Operand.Name -contains 'ChangeState') 'automatic and manual settlement share the guarded state transition'
+    foreach ($route in 'Spawner.MonsterSpawner/InitDay','UI.UIRushWave/OnMorningStart') {
+        $class,$method = $route.Split('/')
+        $body = @(Ops $class $method)
+        $unlock = $body | Where-Object { $_.Operand.Name -eq 'GetMaxDay' -and $_.Next.Operand -eq 21 }
+        $comparison = if ($class -eq 'UI.UIRushWave') { '^bge' } else { '^blt' }
+        Check ($null -ne $unlock -and $unlock.Next.Next.OpCode.Name -match $comparison) "$route retains the native day-21 Rush unlock"
+    }
     $names = $pack.MainModule.GetMemberReferences().Name
     Check (!($names | Where-Object { $_ -in 'Rush','SetInt','SetMonsters','ReleaseTheHorde','SetMonstersToSpawn','AddHeroExperience','AddToCoins','RegisterMonster','UnregisterMonster' })) 'plugin has no global Rush, normal quota, reward or registry mutations'
     if ($WagerPackage -and $CopiedSave) {
