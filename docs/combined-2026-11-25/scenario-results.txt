@@ -1,0 +1,161 @@
+overlap-controller1-20261125-063500
+PASS title
+PASS combined profile loaded
+PASS copied world loaded
+PASS live UI scale 1
+PASS input scheme Gamepad
+PASS native 0.2.3 coin card available
+PASS gamepad navigated from Pass to Coin Wager
+PASS coin wager accepted by Gamepad state=Staked
+PASS early manual entry rejected
+INPUT North native tavern action
+HTL payout=2 living=0 extra=3 bonusDeaths=3
+PASS scaled arrival gaps 0.08324432 / 0.08325195
+PASS three native reinforcement kill-reward events
+PASS one warning, one group, native ordinary spawns=119 extras=3
+PASS midnight overlap or early clearance; original living=1
+PASS one combat end and one survival into tavern
+PASS tavern entered via native input action
+PASS wager settled Paid payments=1
+PASS tavern purse matches written checkpoint
+Rush=False AutoRush=False glory=0 saved preference=0
+Combat mode=controlled fixture nativeWallHit=False caller=
+SUCCESS
+
+continue-controller-20261125-063606
+PASS title
+PASS combined profile loaded
+PASS Continue reopened completed tavern
+PASS Continue restored written balance 12
+PASS restored wager Paid
+PASS completed checkpoint did not repeat settlement or spawn
+SUCCESS
+
+overlap-controller-20261125-063622
+PASS title
+PASS combined profile loaded
+PASS copied world loaded
+PASS live UI scale 1.5
+PASS input scheme Gamepad
+PASS native 0.2.3 coin card available
+PASS gamepad navigated from Pass to Coin Wager
+PASS coin wager accepted by Gamepad state=Staked
+PASS early manual entry rejected
+INPUT North native tavern action
+HTL payout=2 living=0 extra=3 bonusDeaths=3
+PASS scaled arrival gaps 0.08324432 / 0.08325195
+PASS three native reinforcement kill-reward events
+PASS one warning, one group, native ordinary spawns=119 extras=3
+PASS midnight overlap or early clearance; original living=1
+PASS one combat end and one survival into tavern
+PASS tavern entered via native input action
+PASS wager settled Paid payments=1
+PASS tavern purse matches written checkpoint
+Rush=False AutoRush=False glory=0 saved preference=0
+Combat mode=controlled fixture nativeWallHit=False caller=
+SUCCESS
+
+continue-controller-20261125-063716
+PASS title
+PASS combined profile loaded
+PASS Continue reopened completed tavern
+PASS Continue restored written balance 12
+PASS restored wager Paid
+PASS completed checkpoint did not repeat settlement or spawn
+SUCCESS
+
+early-mouse15-20261125-063732
+PASS title
+PASS combined profile loaded
+PASS copied world loaded
+PASS live UI scale 1.5
+PASS input scheme KeyboardMouse
+PASS native 0.2.3 coin card available
+PASS coin wager accepted by KeyboardMouse state=Staked
+PASS early manual entry rejected
+PASS native clock received clicks=1 resulting speed=2
+INPUT Enter native tavern action
+HTL payout=2 living=0 extra=3 bonusDeaths=3
+PASS scaled arrival gaps 0.08325195 / 0.08324432
+PASS three native reinforcement kill-reward events
+PASS one warning, one group, native ordinary spawns=119 extras=3
+PASS midnight overlap or early clearance; original living=0
+PASS one combat end and one survival into tavern
+PASS tavern entered via native input action
+PASS wager settled Paid payments=1
+PASS tavern purse matches written checkpoint
+Rush=True AutoRush=True glory=1 saved preference=1
+Combat mode=controlled fixture nativeWallHit=False caller=
+SUCCESS
+
+early-mouse-20261125-063822
+PASS title
+PASS combined profile loaded
+PASS copied world loaded
+PASS live UI scale 1
+PASS input scheme KeyboardMouse
+PASS native 0.2.3 coin card available
+PASS coin wager accepted by KeyboardMouse state=Staked
+PASS early manual entry rejected
+PASS native clock received clicks=1 resulting speed=2
+HTL payout=2 living=0 extra=3 bonusDeaths=3
+PASS scaled arrival gaps 0.0999527 / 0.09999847
+PASS three native reinforcement kill-reward events
+PASS one warning, one group, native ordinary spawns=119 extras=3
+PASS midnight overlap or early clearance; original living=0
+PASS one combat end and one survival into tavern
+PASS wager settled Paid payments=1
+PASS tavern purse matches written checkpoint
+Rush=False AutoRush=False glory=0 saved preference=0
+Combat mode=controlled fixture nativeWallHit=False caller=
+SUCCESS
+
+natural-mouse-20261125-063941
+PASS title
+PASS combined profile loaded
+PASS copied world loaded
+PASS live UI scale 1
+PASS input scheme KeyboardMouse
+PASS native 0.2.3 coin card available
+PASS coin wager accepted by KeyboardMouse state=Staked
+NATIVE wall attack 30 -> 29.63065 phase=Day extra=0 caller=UnitHealth.TakeHealthDamage state=Lost
+PASS native clock received clicks=1 resulting speed=2
+NATURAL LOSS normal=119 extra=3 rewardEvents=0 wager=Lost phase=Evening
+PASS actual defeat forfeits stake without payout
+SUCCESS
+
+loss-controller15-20261125-064110
+PASS title
+PASS combined profile loaded
+PASS copied world loaded
+PASS live UI scale 1.5
+PASS input scheme Gamepad
+PASS native 0.2.3 coin card available
+PASS gamepad navigated from Pass to Coin Wager
+PASS coin wager accepted by Gamepad state=Staked
+PASS early manual entry rejected
+NATIVE wall attack 30 -> 29.61022 phase=Sunset extra=0 caller=UnitHealth.TakeHealthDamage state=Lost
+PASS real native wall damage forfeited wager
+PASS repair did not undo loss
+INPUT North native tavern action
+PASS scaled arrival gaps 0.08325195 / 0.08325195
+PASS three native reinforcement kill-reward events
+PASS one warning, one group, native ordinary spawns=119 extras=3
+PASS midnight overlap or early clearance; original living=1
+PASS one combat end and one survival into tavern
+PASS tavern entered via native input action
+PASS native attack and repaired loss both observed
+PASS wager settled Lost payments=0
+PASS tavern purse matches written checkpoint
+Rush=False AutoRush=False glory=0 saved preference=0
+Combat mode=controlled fixture nativeWallHit=True caller=UnitHealth.TakeHealthDamage
+SUCCESS
+
+continue-controller-20261125-064221
+PASS title
+PASS combined profile loaded
+PASS Continue reopened completed tavern
+PASS Continue restored written balance 10
+PASS restored wager Lost
+PASS completed checkpoint did not repeat settlement or spawn
+SUCCESS
