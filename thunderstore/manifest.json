@@ -1,7 +1,7 @@
 {
   "name": "NightsOfTerror",
   "version_number": "0.1.3",
-  "website_url": "",
-  "description": "A dusk warning heralds a second group of monsters at midnight on ordinary nights. Defeat both groups to open the tavern.",
+  "website_url": "https://github.com/GKJ-Super-Fantasy-Kingdom/nights-of-terror",
+  "description": "Defend against a second wave at midnight. On ordinary nights, reinforcements number half the original wave, rounded up.",
   "dependencies": ["BepInEx-BepInExPack-5.4.2305", "BepInEx-HideManagerGameObject_Config-5.4.2304"]
 }
