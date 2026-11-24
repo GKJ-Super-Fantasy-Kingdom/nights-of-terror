@@ -1,6 +1,6 @@
 {
   "name": "NightsOfTerror",
-  "version_number": "0.1.1",
+  "version_number": "0.1.2",
   "website_url": "",
   "description": "A dusk warning heralds a second group of monsters at midnight on ordinary nights. Defeat both groups to open the tavern.",
   "dependencies": ["BepInEx-BepInExPack-5.4.2305", "BepInEx-HideManagerGameObject_Config-5.4.2304"]

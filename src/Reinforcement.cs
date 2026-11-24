@@ -1,10 +1,20 @@
+using System;
+
 namespace NightsOfTerror
 {
     // Lives for one dawn checkpoint. Loading the checkpoint creates a fresh schedule.
     internal sealed class Reinforcement
     {
-        internal const int GroupSize = 10;
-        internal int Remaining { get; private set; } = GroupSize;
+        internal Reinforcement(int count)
+        {
+            Count = Remaining = count;
+        }
+
+        internal static int SizeFromQuota(int quota)
+            => quota <= 0 ? 0 : Math.Max(10, Math.Min(30, (int)((quota + 4L) / 5)));
+
+        internal int Count { get; }
+        internal int Remaining { get; private set; }
         private float nextArrival;
 
         internal bool IsDue(float scaledTime) => Remaining > 0 && scaledTime >= nextArrival;

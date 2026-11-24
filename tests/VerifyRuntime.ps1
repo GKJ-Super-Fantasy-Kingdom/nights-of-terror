@@ -1,7 +1,7 @@
 param(
     [string]$GameDir = 'D:\SteamLibrary\steamapps\common\Super Fantasy Kingdom',
     [string]$ProfileDir = "$PSScriptRoot/../.analysis/profile",
-    [string]$Package = "$PSScriptRoot/../dist/NightsOfTerror-0.1.1.zip",
+    [string]$Package = "$PSScriptRoot/../dist/NightsOfTerror-0.1.2.zip",
     [string]$WagerPackage,
     [string]$CopiedSave
 )
@@ -32,13 +32,18 @@ $packedBytes = FromZip $Package 'plugins/NightsOfTerror.dll'
 $mod = [Reflection.Assembly]::Load($packedBytes)
 $flags = [Reflection.BindingFlags]'Public,NonPublic,Instance,Static'
 $scheduler = $mod.GetType('NightsOfTerror.Reinforcement')
-$groupSize = $scheduler.GetField('GroupSize',$flags).GetRawConstantValue()
-Check ($groupSize -eq 10) 'midnight group contains ten foes'
+$sizeFromQuota = $scheduler.GetMethod('SizeFromQuota',$flags)
+function SizeFromQuota([int]$quota) { $sizeFromQuota.Invoke($null,@($quota)) }
+foreach ($case in @{0=0; 6=10; 50=10; 51=11; 119=24; 167=30; ([int]::MaxValue)=30}.GetEnumerator()) {
+    Check ((SizeFromQuota $case.Key) -eq $case.Value) "quota $($case.Key) yields $($case.Value) foes"
+}
+$groupSize = SizeFromQuota 119
+$createGroup = $scheduler.GetConstructor($flags,$null,@([int]),$null)
 function Call($target, $method, [object[]]$arguments) {
     $target.GetType().GetMethod($method, $flags).Invoke($target, $arguments)
 }
 foreach ($rush in $true,$false) {
-    $group = [Activator]::CreateInstance($scheduler,$true)
+    $group = $createGroup.Invoke(@($groupSize))
     Check ((Call $group ForClearance 0) -eq 1) "early clearance held until midnight (rush=$rush)"
     Check ((Call $group ForClearance 7) -eq 7) 'overlapping original group keeps its real count'
     for ($arrival = 1; $arrival -le $groupSize; $arrival++) {
@@ -51,11 +56,11 @@ foreach ($rush in $true,$false) {
             Check ((Call $group ForClearance 0) -eq 1) 'instant kills between arrivals keep tavern closed'
         }
     }
-    Check (!(Call $group IsDue ([single]1000))) 'overtime stops after the tenth reinforcement'
+    Check (!(Call $group IsDue ([single]1000))) 'overtime stops after the planned reinforcement count'
     Check ((Call $group ForClearance 2) -eq 2 -and (Call $group ForClearance 0) -eq 0) 'native living population alone controls final clearance'
 }
-$replay = [Activator]::CreateInstance($scheduler,$true)
-Check ((Call $replay get_Remaining @()) -eq $groupSize) 'fresh dawn schedule starts with all ten arrivals'
+$replay = $createGroup.Invoke(@($groupSize))
+Check ((Call $replay get_Remaining @()) -eq $groupSize) 'fresh dawn schedule starts with the calculated quota'
 Call $replay Cancel @()
 Check ((Call $replay ForClearance 0) -eq 0 -and !(Call $replay IsDue ([single]999))) 'interrupted group releases its reservation'
 $instance = [Runtime.CompilerServices.RuntimeHelpers]::GetUninitializedObject($mod.GetType('NightsOfTerror.Plugin'))
@@ -74,9 +79,17 @@ $clock = GameObjectFixture ([SuperFantasyKingdom.DaytimeManager])
 $spawner = GameObjectFixture ([SuperFantasyKingdom.Spawner.MonsterSpawner])
 $combat = GameObjectFixture ([SuperFantasyKingdom.CombatManager])
 $enemy = GameObjectFixture ([SuperFantasyKingdom.Monster])
-$wave = [SuperFantasyKingdom.Spawner.MonsterSpawner+Wave]::new()
-$wave.monster = $enemy
-$spawner.waves = @($wave)
+$older = GameObjectFixture ([SuperFantasyKingdom.Monster])
+$future = GameObjectFixture ([SuperFantasyKingdom.Monster])
+$spawner.waves = @(
+    [SuperFantasyKingdom.Spawner.MonsterSpawner+Wave]::new(),
+    [SuperFantasyKingdom.Spawner.MonsterSpawner+Wave]::new(),
+    [SuperFantasyKingdom.Spawner.MonsterSpawner+Wave]::new()
+)
+$spawner.waves[0].monster = $older
+$spawner.waves[1].monster = $enemy
+$spawner.waves[2].monster = $future
+$spawner.GetType().GetField('m_Difficulty',$flags).SetValue($spawner,2)
 [SuperFantasyKingdom.DaytimeManager]::Instance = $clock
 [SuperFantasyKingdom.CombatManager]::Instance = $combat
 [SuperFantasyKingdom.GameManager]::Instance = GameObjectFixture ([SuperFantasyKingdom.GameManager])
@@ -92,14 +105,22 @@ $dayField=$clock.GetType().GetField('m_CurrentDay',$flags)
 Call $instance Dawn 1
 foreach($day in 7,14,21,28,29) {
     $dayField.SetValue($clock,$day)
-    Check (!(Call $instance Schedule @($clock,$spawner,$day))) "day $day excluded using native calendar"
+    Check (!(Call $instance Schedule @($clock,$spawner,$day,119))) "day $day excluded using native calendar"
 }
 $dayField.SetValue($clock,13)
-Check (Call $instance Schedule @($clock,$spawner,13)) 'ordinary dusk schedules prepared native enemy'
-Check (!(Call $instance Schedule @($clock,$spawner,13))) 'repeated dusk cannot announce or reserve twice'
+Check (!(Call $instance Schedule @($clock,$spawner,13,0))) 'an ordinary night with no original quota skips reinforcement'
+Check (Call $instance Schedule @($clock,$spawner,13,119)) 'ordinary dusk schedules prepared native enemy'
+Check (!(Call $instance Schedule @($clock,$spawner,13,119))) 'repeated dusk cannot announce or reserve twice'
 Check ((Gate CountBeforeTavern 0) -eq 1 -and !(Prefix TavernEntry @())) 'empty early battlefield with pending group keeps both tavern paths closed'
 Check (!(Prefix Survival ([SuperFantasyKingdom.GameState]::Survived))) 'premature survival cannot reach wager settlement'
 Check (Prefix Survival ([SuperFantasyKingdom.GameState]::Lose)) 'real loss can interrupt the scheduled night'
+$pool = $pluginType.GetField('pool',$flags).GetValue($instance)
+$spawner.waves[1].monster = $future
+Check ((Call $pool get_Count @()) -eq 2) 'snapshot includes only tiers selected by this dusk'
+$newRoll = Call $pool Pick ([double]0.75)
+$oldRoll = Call $pool Pick ([double]0.25)
+Check ([object]::ReferenceEquals($newRoll.Item1,$enemy) -and $newRoll.Item2 -eq 2) 'higher roll selects current dusk enemy at its native level'
+Check ([object]::ReferenceEquals($oldRoll.Item1,$older) -and $oldRoll.Item2 -eq 1) 'lower roll can select earlier dusk enemy and never uses later selections'
 $activeGroup=$pluginType.GetField('group',$flags).GetValue($instance)
 $combat.GetType().GetField('m_Monsters',$flags).SetValue($combat,[Collections.Generic.List[SuperFantasyKingdom.MonsterBase]]::new())
 $normal=GameObjectFixture ([SuperFantasyKingdom.Monster])
@@ -121,7 +142,7 @@ $combat.GetType().GetField('m_IsCombatOver',$flags).SetValue($combat,$true)
 Check ((Gate CountBeforeNight 0) -eq 0 -and (Prefix TavernEntry @())) 'native combat completion releases evening and manual entry'
 Check ((Prefix Survival ([SuperFantasyKingdom.GameState]::Survived)) -and !(Prefix Survival ([SuperFantasyKingdom.GameState]::Survived)) -and !(Prefix TavernEntry @())) 'manual and automatic survival share one claim'
 Call $instance Dawn 13
-Check ((Gate CountBeforeTavern 0) -eq 0 -and (Call $instance Schedule @($clock,$spawner,13))) 'replaying the same dawn can schedule a fresh group'
+Check ((Gate CountBeforeTavern 0) -eq 0 -and (Call $instance Schedule @($clock,$spawner,13,119))) 'replaying the same dawn can schedule a fresh group'
 $pluginType.GetField('Active',$flags).SetValue($null,$null)
 
 $resolver = [Mono.Cecil.DefaultAssemblyResolver]::new()
@@ -139,6 +160,10 @@ try {
     $refs = @($pack.MainModule.GetMemberReferences() | Where-Object { $_.DeclaringType.Scope.Name -match '^(Unity|Assembly-CSharp|0Harmony|BepInEx)' })
     foreach ($ref in $refs) { if ($null -eq $ref.Resolve()) { throw "Unresolved $ref" } }
     Check ($refs.Count -gt 0) "$($refs.Count) references resolve against installed assemblies"
+    $quotaOps = @(Ops 'Spawner.MonsterSpawner' SetMonstersToSpawn)
+    $initialCount = $quotaOps | Where-Object { $_.OpCode.Name -eq 'stfld' -and $_.Operand.Name -eq 'm_MonstersToSpawn' }
+    Check ($initialCount.Previous.Operand.Name -eq 'm_MinMonstersToSpawn') 'native original quota seeds the remaining-count field'
+    Check (!( (Ops 'Spawner.MonsterSpawner' FixedUpdate) | Where-Object { $_.OpCode.Name -eq 'stfld' -and $_.Operand.Name -eq 'm_MinMonstersToSpawn' })) 'native spawn loop leaves the original quota readable at dusk'
     $nativeSpawn = @(Ops 'Spawner.MonsterSpawner' SpawnMonster).Operand.Name
     Check ($nativeSpawn -contains 'GetMonster' -and $nativeSpawn -contains 'Init' -and $nativeSpawn -contains 'MonsterSpawn') 'native spawn uses the pool, initialization and spawn event'
     Check ((Ops MonsterBase Init).Operand.Name -contains 'RegisterMonster' -and (Ops MonsterBase OnDeath).Operand.Name -contains 'UnregisterMonster') 'native enemy lifetime enters and leaves combat population'
