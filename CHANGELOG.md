@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.4
+
+Clarify the mod’s description and compatibility for players.
+
 ## 0.1.3
 
 - Set the midnight group to half the original ordinary-wave quota, rounded up.

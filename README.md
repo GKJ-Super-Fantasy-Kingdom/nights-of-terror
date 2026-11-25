@@ -23,27 +23,27 @@ Hold the kingdom through a second wave. On ordinary nights, a dusk warning annou
 
 ![The dusk warning displays the size of the upcoming midnight group.](https://raw.githubusercontent.com/GKJ-Super-Fantasy-Kingdom/nights-of-terror/4fe987bbd55b618a89f95baa079db7529333aa8d/docs/screenshots/0.1.3/dusk-1x.png)
 
-*Day 13 of the playtest. The warning shows the count for that night.*
+*The dusk warning shows how many reinforcements will arrive.*
 
 **Full midnight group at 1×**
 
 ![The midnight group approaches across the northern edge of the battlefield.](https://raw.githubusercontent.com/GKJ-Super-Fantasy-Kingdom/nights-of-terror/4fe987bbd55b618a89f95baa079db7529333aa8d/docs/screenshots/0.1.3/full-midnight-group-1x.png)
 
-*The complete midnight group in this playtest drew seven enemy types from the dusk pool.*
+*Midnight reinforcements draw from the same enemy pool as the original wave.*
 
 ## Compatibility
 
-- Tested on Super Fantasy Kingdom **0.8.068**. The 0.1.3 screenshots and settlement check used a copied Human day-13 save at normal game speed and 1× UI. The test driver controlled enemy clearance. The larger wave's natural combat balance remains untested. [Playtest notes](https://github.com/GKJ-Super-Fantasy-Kingdom/nights-of-terror/blob/v0.1.3/docs/playtest-0.1.3.md)
-- With [Hold the Line](https://thunderstore.io/c/super-fantasy-kingdom/p/GKJ/HoldTheLine/) 0.2.3, the wager stays active through both groups and settles once after combat. Hold the Line is optional.
-- The mod adds no save fields. Replaying a dawn schedules that day's encounter again.
+- Works with Super Fantasy Kingdom **0.8.068** and the other [GKJ mods](https://thunderstore.io/c/super-fantasy-kingdom/p/GKJ/).
+- [Hold the Line](https://thunderstore.io/c/super-fantasy-kingdom/p/GKJ/HoldTheLine/) settles the wager after the night is cleared, including both waves. A wall hit can forfeit the stake during either wave.
+- [Cursed Relics](https://thunderstore.io/c/super-fantasy-kingdom/p/GKJ/CursedRelics/) and [Cursed Equipment](https://thunderstore.io/c/super-fantasy-kingdom/p/GKJ/CursedEquipment/) can be used alongside the extra wave. Reinforcements grant the game’s usual rewards for their enemies.
+- Boss nights, Day 29, and the final day of shortened challenges use their usual encounters. Replaying a dawn schedules that day’s wave again.
+- These community mods can share the same profile. [Achievement Enabler](https://thunderstore.io/c/super-fantasy-kingdom/p/ownlyme/AchievementEnabler/), [Bakery Uses Wheat](https://thunderstore.io/c/super-fantasy-kingdom/p/ownlyme/BakeryUsesWheat/), [More Relics](https://thunderstore.io/c/super-fantasy-kingdom/p/ownlyme/MoreRelics/), [Right Click Skip](https://thunderstore.io/c/super-fantasy-kingdom/p/ownlyme/RightClickSkip/), and [Tavern Food Priorities](https://thunderstore.io/c/super-fantasy-kingdom/p/ownlyme/TavernFoodPriorities/).
 
 ## Installation
 
 1. In Thunderstore Mod Manager or r2modman, select your **Super Fantasy Kingdom** profile.
 2. Install **NightsOfTerror** by **GKJ**. Allow the manager to install [BepInExPack](https://thunderstore.io/c/super-fantasy-kingdom/p/BepInEx/BepInExPack/) and [HideManagerGameObject Config](https://thunderstore.io/c/super-fantasy-kingdom/p/BepInEx/HideManagerGameObject_Config/).
 3. Start the game modded and watch for the warning on an ordinary day.
-
-See the [contribution guide](https://github.com/GKJ-Super-Fantasy-Kingdom/nights-of-terror/blob/main/CONTRIBUTING.md) for local builds, testing and issue reports. The original mod code is released under the [MIT License](https://github.com/GKJ-Super-Fantasy-Kingdom/nights-of-terror/blob/main/LICENSE). Super Fantasy Kingdom and its assets retain their respective ownership.
 
 ## Support
 
