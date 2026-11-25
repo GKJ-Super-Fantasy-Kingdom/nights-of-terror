@@ -19,21 +19,21 @@ Hold the kingdom through a second wave. On ordinary nights, a dusk warning annou
 
 ## Screenshots
 
-**Dusk warning at 1.5×**
+**Dusk warning at 1×**
 
-![The dusk warning displays the size of the upcoming midnight group.](https://raw.githubusercontent.com/GKJ-Super-Fantasy-Kingdom/nights-of-terror/v0.1.3/docs/screenshots/0.1.3/dusk-1.5x.png)
+![The dusk warning displays the size of the upcoming midnight group.](https://raw.githubusercontent.com/GKJ-Super-Fantasy-Kingdom/nights-of-terror/4fe987bbd55b618a89f95baa079db7529333aa8d/docs/screenshots/0.1.3/dusk-1x.png)
 
 *Day 13 of the playtest. The warning shows the count for that night.*
 
-**Full midnight group at 1.5×**
+**Full midnight group at 1×**
 
-![The midnight group approaches across the northern edge of the battlefield.](https://raw.githubusercontent.com/GKJ-Super-Fantasy-Kingdom/nights-of-terror/v0.1.3/docs/screenshots/0.1.3/full-midnight-group-1.5x.png)
+![The midnight group approaches across the northern edge of the battlefield.](https://raw.githubusercontent.com/GKJ-Super-Fantasy-Kingdom/nights-of-terror/4fe987bbd55b618a89f95baa079db7529333aa8d/docs/screenshots/0.1.3/full-midnight-group-1x.png)
 
-*The complete midnight group in this playtest drew six enemy types from the dusk pool.*
+*The complete midnight group in this playtest drew seven enemy types from the dusk pool.*
 
 ## Compatibility
 
-- Tested on Super Fantasy Kingdom **0.8.068**. The 0.1.3 screenshots and settlement check used a copied Human day-13 save at normal game speed and 1.5× UI. The test driver controlled enemy clearance. The larger wave's natural combat balance remains untested. [Playtest notes](https://github.com/GKJ-Super-Fantasy-Kingdom/nights-of-terror/blob/v0.1.3/docs/playtest-0.1.3.md)
+- Tested on Super Fantasy Kingdom **0.8.068**. The 0.1.3 screenshots and settlement check used a copied Human day-13 save at normal game speed and 1× UI. The test driver controlled enemy clearance. The larger wave's natural combat balance remains untested. [Playtest notes](https://github.com/GKJ-Super-Fantasy-Kingdom/nights-of-terror/blob/v0.1.3/docs/playtest-0.1.3.md)
 - With [Hold the Line](https://thunderstore.io/c/super-fantasy-kingdom/p/GKJ/HoldTheLine/) 0.2.3, the wager stays active through both groups and settles once after combat. Hold the Line is optional.
 - The mod adds no save fields. Replaying a dawn schedules that day's encounter again.
 
