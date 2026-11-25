@@ -44,3 +44,7 @@ Hold the kingdom through a second wave. On ordinary nights, a dusk warning annou
 3. Start the game modded and watch for the warning on an ordinary day.
 
 See the [contribution guide](https://github.com/GKJ-Super-Fantasy-Kingdom/nights-of-terror/blob/main/CONTRIBUTING.md) for local builds, testing and issue reports. The original mod code is released under the [MIT License](https://github.com/GKJ-Super-Fantasy-Kingdom/nights-of-terror/blob/main/LICENSE). Super Fantasy Kingdom and its assets retain their respective ownership.
+
+## Support
+
+[Support GKJ Games on Ko-fi](https://ko-fi.com/gkj_games)
