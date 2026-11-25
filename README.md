@@ -4,7 +4,7 @@ Hold the kingdom through a second wave. On ordinary nights, a dusk warning annou
 
 ## Features
 
-- Midnight reinforcements number **50% of the ordinary wave's original spawn quota**, rounded up. The count still applies if you clear the first group early.
+- Midnight reinforcements number **50% of the ordinary wave's original spawn quota**, rounded up. The ordinary wave size varies by day, Curse and other game modifiers. Clearing the first group early doesn’t affect the reinforcement count.
 - Reinforcements are drawn from the enemy pool selected by dusk, with higher odds for recent tiers. Each enemy has full normal HP for its type, level, evolution and curse.
 - Reinforcements arrive at Rush spacing by default. The normal Rush unlocks, controls, Auto Rush preference and bonus Glory follow the base game.
 - Reinforcement kills count toward the tavern's ordinary kill rewards and Glory. Clear both groups and collect any required chest to open the tavern.
@@ -21,15 +21,15 @@ Hold the kingdom through a second wave. On ordinary nights, a dusk warning annou
 
 **Dusk warning at 1.5×**
 
-![The day-13 warning announces 60 reinforcements at midnight.](https://raw.githubusercontent.com/GKJ-Super-Fantasy-Kingdom/nights-of-terror/v0.1.3/docs/screenshots/0.1.3/dusk-1.5x.png)
+![The dusk warning displays the size of the upcoming midnight group.](https://raw.githubusercontent.com/GKJ-Super-Fantasy-Kingdom/nights-of-terror/v0.1.3/docs/screenshots/0.1.3/dusk-1.5x.png)
 
-*The original wave's quota was 119 enemies. The mod rounded half of that quota up to 60.*
+*Day 13 of the playtest. The warning shows the count for that night.*
 
 **Full midnight group at 1.5×**
 
 ![The midnight group approaches across the northern edge of the battlefield.](https://raw.githubusercontent.com/GKJ-Super-Fantasy-Kingdom/nights-of-terror/v0.1.3/docs/screenshots/0.1.3/full-midnight-group-1.5x.png)
 
-*All 60 reinforcements were alive together. This draw contained six enemy types from the pool selected by dusk.*
+*The complete midnight group in this playtest drew six enemy types from the dusk pool.*
 
 ## Compatibility
 
