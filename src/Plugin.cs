@@ -8,12 +8,13 @@ using UnityEngine;
 
 namespace NightsOfTerror
 {
-    [BepInPlugin("gkj.nightsofterror", "Nights of Terror", "0.1.4")]
+    [BepInPlugin("gkj.nightsofterror", "Nights of Terror", "0.1.5")]
     public sealed class Plugin : BaseUnityPlugin
     {
         internal static Plugin Active;
         private Harmony patches;
         private ConfigEntry<bool> rushed;
+        private ConfigEntry<int> wavePercent;
         private DaytimeManager clock;
         private DuskPool pool;
         private AccessTools.FieldRef<MonsterSpawner, int> ordinaryQuota;
@@ -24,8 +25,7 @@ namespace NightsOfTerror
 
         private void Awake()
         {
-            rushed = Config.Bind("Reinforcements", "RushedArrival", true,
-                "Use the native Rush spacing for this group. When disabled, its members arrive one second apart.");
+            BindReinforcements(Config);
             patches = new Harmony("gkj.nightsofterror");
             try
             {
@@ -46,6 +46,15 @@ namespace NightsOfTerror
             GameManager.OnGameOver += ResetNight;
             DaytimeManager.BeforeMorningStart += Dawn;
             DaytimeManager.OnSunsetStart += Dusk;
+        }
+
+        private void BindReinforcements(ConfigFile config)
+        {
+            rushed = config.Bind("Reinforcements", "RushedArrival", true,
+                "Use the native Rush spacing for this group. When disabled, its members arrive one second apart.");
+            wavePercent = config.Bind("Reinforcements", "WavePercent", 50,
+                new ConfigDescription("Percent of the ordinary wave's original spawn quota, rounded up. Set to 0 to disable midnight reinforcements.",
+                    new AcceptableValueRange<int>(0, 100)));
         }
 
         private void OnDestroy()
@@ -83,14 +92,14 @@ namespace NightsOfTerror
             int quota = ordinaryQuota(spawner);
             if (!Schedule(DaytimeManager.Instance, spawner, day, quota)) return;
             Logger.LogInfo($"Night {day}: dusk quota {quota}, remaining {spawner.GetMonstersToSpawn()}, midnight group {group.Count}, eligible enemy tiers {pool.Count}.");
-            AlertManager.Instance.DisplayMessage("Nights of Terror", $"{group.Count} more foes arrive at midnight.");
+            ShowReinforcementAlert("Nights of Terror", "at midnight");
         }
 
         private bool Schedule(DaytimeManager today, MonsterSpawner spawner, int day, int quota)
         {
             if (today == null || spawner == null || Owns(today) || today.IsSpecialDay() || today.IsBossDay()
                 || day >= today.GetDayLimit() || GameManager.Instance.IsGameOver()) return false;
-            int count = Reinforcement.SizeFromQuota(quota);
+            int count = Reinforcement.SizeFromQuota(quota, wavePercent.Value);
             if (count == 0) return false;
             // On ordinary nights the native difficulty is the current wave index plus one.
             var selected = new DuskPool(spawner.waves, spawner.GetCurrentDifficulty());
@@ -129,7 +138,25 @@ namespace NightsOfTerror
                 Logger.LogError("Reinforcement interrupted. Native combat will settle surviving enemies. " + error);
                 return;
             }
-            if (first) AlertManager.Instance.DisplayMessage("Midnight", "Reinforcements have arrived!");
+            if (first) ShowReinforcementAlert("Midnight", "arriving");
+        }
+
+        private void ShowReinforcementAlert(string title, string timing)
+        {
+            var alerts = AlertManager.Instance;
+            if (alerts == null) return;
+
+            var stack = AccessTools.Field(typeof(AlertManager), "container")?.GetValue(alerts) as Transform;
+            int previousCount = stack == null ? 0 : stack.childCount;
+            int count = group.Count;
+            string foe = count == 1 ? "foe" : "foes";
+            alerts.DisplayMessage($"<sprite name=IconDemon> {title}",
+                $"<color=#FFD27A>{count}</color> {foe} {timing}");
+
+            // Lift just our message above the action prompts. The native tween moves it horizontally.
+            if (stack != null && stack.childCount == previousCount + 1 &&
+                stack.GetChild(previousCount).Find("Message") is RectTransform message)
+                message.anchoredPosition += Vector2.up * 224f;
         }
     }
 }

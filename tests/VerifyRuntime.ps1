@@ -1,7 +1,7 @@
 param(
     [string]$GameDir = 'D:\SteamLibrary\steamapps\common\Super Fantasy Kingdom',
     [string]$ProfileDir = "$PSScriptRoot/../.analysis/profile",
-    [string]$Package = "$PSScriptRoot/../dist/NightsOfTerror-0.1.3.zip",
+    [string]$Package = "$PSScriptRoot/../dist/NightsOfTerror-0.1.5.zip",
     [string]$WagerPackage,
     [string]$CopiedSave
 )
@@ -33,11 +33,15 @@ $mod = [Reflection.Assembly]::Load($packedBytes)
 $flags = [Reflection.BindingFlags]'Public,NonPublic,Instance,Static'
 $scheduler = $mod.GetType('NightsOfTerror.Reinforcement')
 $sizeFromQuota = $scheduler.GetMethod('SizeFromQuota',$flags)
-function SizeFromQuota([int]$quota) { $sizeFromQuota.Invoke($null,@($quota)) }
+function SizeFromQuota([int]$quota, [int]$percent) { $sizeFromQuota.Invoke($null,@($quota,$percent)) }
 foreach ($case in @{(-1)=0; 0=0; 1=1; 6=3; 50=25; 51=26; 119=60; 167=84; ([int]::MaxValue)=1073741824}.GetEnumerator()) {
-    Check ((SizeFromQuota $case.Key) -eq $case.Value) "quota $($case.Key) yields $($case.Value) foes"
+    Check ((SizeFromQuota $case.Key 50) -eq $case.Value) "quota $($case.Key) at 50% yields $($case.Value) foes"
 }
-$groupSize = SizeFromQuota 119
+Check ((SizeFromQuota 119 0) -eq 0) '0% disables reinforcements for a positive quota'
+Check ((SizeFromQuota 119 75) -eq 90) '75% rounds quota 119 up to 90'
+Check ((SizeFromQuota 301 75) -eq 226) '75% rounds a late-game fixture quota of 301 up to 226'
+Check ((SizeFromQuota ([int]::MaxValue) 100) -eq [int]::MaxValue) '100% matches the original quota without overflowing'
+$groupSize = SizeFromQuota 119 50
 $createGroup = $scheduler.GetConstructor($flags,$null,@([int]),$null)
 function Call($target, $method, [object[]]$arguments) {
     $target.GetType().GetMethod($method, $flags).Invoke($target, $arguments)
@@ -64,6 +68,26 @@ Check ((Call $replay get_Remaining @()) -eq $groupSize) 'fresh dawn schedule sta
 Call $replay Cancel @()
 Check ((Call $replay ForClearance 0) -eq 0 -and !(Call $replay IsDue ([single]999))) 'interrupted group releases its reservation'
 $instance = [Runtime.CompilerServices.RuntimeHelpers]::GetUninitializedObject($mod.GetType('NightsOfTerror.Plugin'))
+$pluginType = $instance.GetType()
+$configPath = [IO.Path]::GetTempFileName()
+try {
+    Set-Content -LiteralPath $configPath -Value '[Reinforcements]', 'RushedArrival = false'
+    $config = [BepInEx.Configuration.ConfigFile]::new($configPath,$true)
+    Call $instance BindReinforcements (, $config)
+    $wavePercent = $pluginType.GetField('wavePercent',$flags).GetValue($instance)
+    $rushedArrival = $pluginType.GetField('rushed',$flags).GetValue($instance)
+    Check ($wavePercent.Value -eq 50 -and !$rushedArrival.Value) 'an older config gains the 50% default and retains its Rush override'
+    $wavePercent.Value = 75
+    $config.Reload()
+    Check ($wavePercent.Value -eq 75) 'the new percentage persists in the BepInEx config'
+    $config.SaveOnConfigSet = $false
+    $wavePercent.Value = -1
+    Check ($wavePercent.Value -eq 0) 'BepInEx clamps a negative setting to 0%'
+    $wavePercent.Value = 101
+    Check ($wavePercent.Value -eq 100) 'BepInEx caps the setting at 100%'
+} finally {
+    Remove-Item -LiteralPath $configPath
+}
 Check ((Call $instance BeginSettlement @()) -and !(Call $instance BeginSettlement @())) 'only first survival request can reach state observers'
 Call $instance ResetNight @()
 Check (Call $instance BeginSettlement @()) 'replayed dawn resets the settlement claim'
@@ -94,7 +118,6 @@ $spawner.GetType().GetField('m_Difficulty',$flags).SetValue($spawner,2)
 [SuperFantasyKingdom.CombatManager]::Instance = $combat
 [SuperFantasyKingdom.GameManager]::Instance = GameObjectFixture ([SuperFantasyKingdom.GameManager])
 [MainManager]::Instance = GameObjectFixture ([MainManager])
-$pluginType=$instance.GetType()
 $pluginType.GetField('Active',$flags).SetValue($null,$instance)
 $gates=$mod.GetType('NightsOfTerror.NightGates')
 function Gate($name, [object[]]$argsForGate) { $gates.GetMethod($name,$flags).Invoke($null,$argsForGate) }
@@ -108,9 +131,17 @@ foreach($day in 7,14,21,28,29) {
     Check (!(Call $instance Schedule @($clock,$spawner,$day,119))) "day $day excluded using native calendar"
 }
 $dayField.SetValue($clock,13)
+$wavePercent.Value = 0
+Check (!(Call $instance Schedule @($clock,$spawner,13,119))) '0% skips the dusk warning and reserves no group'
+Check ((Gate CountBeforeTavern 0) -eq 0 -and (Gate CountBeforeNight 0) -eq 0 -and (Prefix TavernEntry @())) '0% leaves both normal clearance paths and tavern entry open'
+$wavePercent.Value = 50
 Check (!(Call $instance Schedule @($clock,$spawner,13,0))) 'an ordinary night with no original quota skips reinforcement'
 Check (Call $instance Schedule @($clock,$spawner,13,119)) 'ordinary dusk schedules prepared native enemy'
+$activeGroup=$pluginType.GetField('group',$flags).GetValue($instance)
+Check ((Call $activeGroup get_Count @()) -eq 60 -and (Call $activeGroup get_Remaining @()) -eq 60) 'the dusk count and pending count start at 60'
+$wavePercent.Value = 75
 Check (!(Call $instance Schedule @($clock,$spawner,13,119))) 'repeated dusk cannot announce or reserve twice'
+Check ([object]::ReferenceEquals($activeGroup,$pluginType.GetField('group',$flags).GetValue($instance)) -and (Call $activeGroup get_Count @()) -eq 60) 'a changed setting cannot resize the group already announced'
 Check ((Gate CountBeforeTavern 0) -eq 1 -and !(Prefix TavernEntry @())) 'empty early battlefield with pending group keeps both tavern paths closed'
 Check (!(Prefix Survival ([SuperFantasyKingdom.GameState]::Survived))) 'premature survival cannot reach wager settlement'
 Check (Prefix Survival ([SuperFantasyKingdom.GameState]::Lose)) 'real loss can interrupt the scheduled night'
@@ -121,7 +152,6 @@ $newRoll = Call $pool Pick ([double]0.75)
 $oldRoll = Call $pool Pick ([double]0.25)
 Check ([object]::ReferenceEquals($newRoll.Item1,$enemy) -and $newRoll.Item2 -eq 2) 'higher roll selects current dusk enemy at its native level'
 Check ([object]::ReferenceEquals($oldRoll.Item1,$older) -and $oldRoll.Item2 -eq 1) 'lower roll can select earlier dusk enemy and never uses later selections'
-$activeGroup=$pluginType.GetField('group',$flags).GetValue($instance)
 $combat.GetType().GetField('m_Monsters',$flags).SetValue($combat,[Collections.Generic.List[SuperFantasyKingdom.MonsterBase]]::new())
 $normal=GameObjectFixture ([SuperFantasyKingdom.Monster])
 $combat.RegisterMonster($normal)
@@ -143,6 +173,19 @@ Check ((Gate CountBeforeNight 0) -eq 0 -and (Prefix TavernEntry @())) 'native co
 Check ((Prefix Survival ([SuperFantasyKingdom.GameState]::Survived)) -and !(Prefix Survival ([SuperFantasyKingdom.GameState]::Survived)) -and !(Prefix TavernEntry @())) 'manual and automatic survival share one claim'
 Call $instance Dawn 13
 Check ((Gate CountBeforeTavern 0) -eq 0 -and (Call $instance Schedule @($clock,$spawner,13,119))) 'replaying the same dawn can schedule a fresh group'
+$activeGroup=$pluginType.GetField('group',$flags).GetValue($instance)
+Check ((Call $activeGroup get_Count @()) -eq 90 -and (Call $activeGroup get_Remaining @()) -eq 90) 'replayed dusk uses the current 75% setting for both counts'
+$dayField.SetValue($clock,27)
+Call $instance Dawn 27
+Check (Call $instance Schedule @($clock,$spawner,27,301)) 'late ordinary night schedules the 75% wave'
+$activeGroup=$pluginType.GetField('group',$flags).GetValue($instance)
+Check ((Call $activeGroup get_Count @()) -eq 226) 'late dusk stores 226 foes for the warning'
+for ($arrival = 1; $arrival -le 226; $arrival++) {
+    $t = 100 + $arrival
+    if (!(Call $activeGroup IsDue ([single]$t))) { throw "Missed scheduled late-wave arrival $arrival" }
+    Call $activeGroup Arrived @([single]$t,$true)
+}
+Check ((Call $activeGroup get_Remaining @()) -eq 0 -and !(Call $activeGroup IsDue ([single]1000))) 'late wave stops after exactly 226 scheduled arrivals'
 $pluginType.GetField('Active',$flags).SetValue($null,$null)
 
 $resolver = [Mono.Cecil.DefaultAssemblyResolver]::new()

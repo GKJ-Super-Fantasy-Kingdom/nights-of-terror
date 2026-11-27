@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.5
+
+- Added `WavePercent` under `[Reinforcements]`. The default is 50% of the ordinary wave's original quota, rounded up. Set it between 0% (disabled) and 100%.
+- Added an enemy icon and a highlighted reinforcement count to the dusk and midnight notifications.
+
 ## 0.1.4
 
 Clarify the mod’s description and compatibility for players.

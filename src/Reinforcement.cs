@@ -8,8 +8,8 @@ namespace NightsOfTerror
             Count = Remaining = count;
         }
 
-        internal static int SizeFromQuota(int quota)
-            => quota <= 0 ? 0 : quota / 2 + quota % 2;
+        internal static int SizeFromQuota(int quota, int percent)
+            => quota <= 0 ? 0 : (int)(((long)quota * percent + 99) / 100);
 
         internal int Count { get; }
         internal int Remaining { get; private set; }
