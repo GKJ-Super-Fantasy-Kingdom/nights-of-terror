@@ -23,7 +23,7 @@ files = {
     "CHANGELOG.md": root / "CHANGELOG.md",
     "plugins/NightsOfTerror.dll": dll,
     "manifest.json": listing / "manifest.json",
-    "README.md": root / "README.md",
+    "README.md": root / "thunderstore/README.md",
     "icon.png": listing / "icon.png",
 }
 dist = root / "dist"
